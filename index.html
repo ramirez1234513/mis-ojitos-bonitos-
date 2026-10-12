@@ -1,0 +1,167 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi psicóloga favorita</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Great Vibes for romance -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .romantic-font {
+            font-family: 'Great Vibes', cursive;
+        }
+        /* Floating hearts animation */
+        @keyframes float {
+            0% { transform: translateY(0vh) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+        }
+        .heart-particle {
+            position: absolute;
+            bottom: -10vh;
+            color: rgba(244, 63, 94, 0.6);
+            animation: float 6s linear infinite;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen bg-slate-950 text-white overflow-x-hidden flex items-center justify-center">
+
+    <!-- Fondo con la foto adjunta y un filtro oscuro translúcido -->
+    <div class="absolute inset-0 z-0">
+        <img src="WhatsApp Image 2026-10-12 at 00.11.20.jpeg" alt="Fondo Romántico" class="w-full h-full object-cover object-center filter brightness-50 contrast-125">
+        <div class="absolute inset-0 "></div>
+    </div>
+
+    <!-- Contenedor de corazones flotantes -->
+    <div id="hearts-container" class="absolute inset-0 pointer-events-none z-50 flow-hidden"></div>
+
+    <!-- 1. Pantalla Inicial (Pregunta) -->
+    <div id="question-screen" class="relative z-20 max-w-md w-full mx-4 p-8 bg-black/40 backdrop-blur-md border border-rose-500/30 rounded-3xl shadow-2xl text-center transition-all duration-700">
+        <div class="mb-6">
+            <span class="inline-block p-4 bg-rose-500/20 text-rose-400 rounded-full text-3xl animate-pulse">
+                <i class="fa-solid fa-heart"></i>
+            </span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-semibold mb-4 leading-tight">
+            ¿Quieres reproducir esta canción <span class="romantic-font text-rose-400 text-5xl block mt-2">mi psicóloga favorita</span>?
+        </h1>
+        <p class="text-slate-300 text-sm mb-8">Tengo una pequeña sorpresa musical esperando por ti.</p>
+        
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button id="btn-yes" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-medium rounded-full shadow-lg shadow-rose-500/30 transform hover:-translate-y-0.5 transition-all duration-200">
+                Sí, con todo el corazón ❤️
+            </button>
+            <button id="btn-no" class="w-full sm:w-auto px-8 py-3.5 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 font-medium rounded-full border border-slate-700 transition-all duration-200">
+                No
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Pantalla Principal (Se muestra al hacer clic en Sí) -->
+    <div id="main-content" class="relative z-25 max-w-lg w-full mx-4 p-8 bg-black/50 backdrop-blur-md border border-rose-500/40 rounded-3xl shadow-2xl text-center hidden opacity-0 transition-opacity duration-1000">
+        <div class="mb-4">
+            <span class="inline-block text-rose-400 text-2xl animate-bounce">
+                <i class="fa-solid fa-music"></i>
+            </span>
+        </div>
+        
+        <h2 class="text-3xl sm:text-4xl font-light mb-2 text-rose-200">
+            Esta canción es de nosotros
+        </h2>
+        <p class="romantic-font text-5xl sm:text-6xl text-rose-400 mb-6 drop-shadow-md">
+            mi niña hermosa
+        </p>
+
+        <!-- Contenedor del reproductor de audio / YouTube -->
+        <div class="bg-black/60 p-5 rounded-2xl border border-rose-500/20 mb-6 shadow-inner">
+            <p class="text-sm font-medium text-rose-300 mb-3">🎵 Calibre 50 - Siempre Te Voy A Querer</p>
+            
+            <!-- Reproductor de YouTube embebido (Siempre te voy a querer) -->
+            <div class="relative w-full rounded-xl overflow-hidden shadow-md aspect-video">
+                <video id="video-local" class="w-full h-full" src="WhatsApp Video 2026-10-12 at 00.17.15.mp4" title="Siempre Te Voy A Querer - Calibre 50" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" controls></video>
+            </div>
+        </div>
+
+        <p class="text-xs text-slate-400 italic">
+            "Y es que mi amor por ti no se cansa, es infinito mi amor por ti"
+        </p>
+    </div>
+
+    <script>
+        // Elementos de la interfaz
+        const questionScreen = document.getElementById('question-screen');
+        const mainContent = document.getElementById('main-content');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const youtubePlayer = document.getElementById('youtube-player');
+        const heartsContainer = document.getElementById('hearts-container');
+
+        // ID de video de YouTube para "Siempre te voy a querer - Calibre 50"
+        const youtubeVideoId = '1J32a2v5uKE'; // URL de referencia para el tema
+
+        // Función para mover el botón "No" cuando intente presionarlo (juego coqueto)
+        btnNo.addEventListener('mouseover', () => {
+            const randomX = (Math.random() - 0.5) * 150;
+            const randomY = (Math.random() - 0.5) * 100;
+            btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        });
+
+        // Evento al hacer clic en "Sí"
+        btnYes.addEventListener('click', () => {
+            // Ocultar pantalla de pregunta con animación
+            questionScreen.style.opacity = '0';
+            questionScreen.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                questionScreen.classList.add('hidden');
+                
+                // Mostrar contenido principal romántico
+                mainContent.classList.remove('hidden');
+                setTimeout(() => {
+                    mainContent.classList.remove('opacity-0');
+                }, 50);
+
+                // Cargar e iniciar la reproducción de la canción con autoplay en el iframe
+                youtubePlayer.src = `https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1`;
+                
+                // Iniciar lluvia intensa de corazones
+                startHeartRain();
+            }, 500);
+        });
+
+        // Generador dinámico de corazones flotantes
+        function startHeartRain() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart-particle');
+                heart.innerHTML = '<i class="fa-solid fa-heart"></i>';
+                
+                // Posición horizontal aleatoria y tamaño variable
+                heart.style.left = Math.random() * 100 + 'vw';
+                const size = Math.random() * 20 + 15;
+                heart.style.fontSize = size + 'px';
+                
+                // Duración de la animación aleatoria
+                const duration = Math.random() * 3 + 4;
+                heart.style.animationDuration = duration + 's';
+                
+                heartsContainer.appendChild(heart);
+
+                // Eliminar el corazón al terminar la animación
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+```
